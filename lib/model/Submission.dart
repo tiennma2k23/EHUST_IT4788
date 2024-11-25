@@ -1,4 +1,4 @@
-
+import 'dart:ffi';
 
 import 'StudentAccount.dart';
 
@@ -15,7 +15,7 @@ class Submission{
       {this.id,
         this.assignmentId,
         this.submissionTime,
-        this.grade,
+        this.grade="",
         this.fileUrl,
         this.textResponse,
         this.studentAccount});
