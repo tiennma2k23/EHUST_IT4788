@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project/screens/class_info.dart';
 import 'package:project/screens/lecturer/lecturer_survey.dart';
 import 'package:project/screens/myAppBar.dart';
-import 'package:project/screens/student/student_material.dart';
 import 'package:project/screens/student/student_survey.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +14,7 @@ class StudentClass extends StatelessWidget {
   Widget build(BuildContext context) {
     final classProvider = Provider.of<ClassProvider>(context);
     return Scaffold(
-      appBar: MyAppBar(check: true, title: "EHUST-STUDENT"),
+      appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -49,12 +47,6 @@ class StudentClass extends StatelessWidget {
                       trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue),
                       onTap: () {
 
-                        print(route);
-                        if(route == "class"){
-                          classProvider.getClassInfoLecturer(context, classItem.classId!);
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>ClassInfo()));
-                        }
-                        if(route == "material") Navigator.push(context, MaterialPageRoute(builder: (context)=> StudentMaterial(classA: classItem,)));
                       },
                     ),
                   );

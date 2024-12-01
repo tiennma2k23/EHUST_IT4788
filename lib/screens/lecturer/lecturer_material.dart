@@ -27,36 +27,6 @@ class _LecturerMaterialState extends State<LecturerMaterial> {
     print(materialProvider.materials.toString());
   }
 
-  void _showDeleteDialog(BuildContext context,MaterialProvider materialProvider, String id, int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Xác Nhận Xóa'),
-          content: Text('Bạn có chắc chắn muốn xóa mục này không?'),
-          actions: [
-            // Nút "Không"
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Đóng dialog
-              },
-              child: Text('Không'),
-            ),
-            // Nút "Có"
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Đóng dialog
-                materialProvider.deleteMaterial(context, id, index);
-                print('Mục đã bị xóa');
-              },
-              child: Text('Có'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final materialProvider = Provider.of<MaterialProvider>(context);
@@ -139,7 +109,7 @@ class _LecturerMaterialState extends State<LecturerMaterial> {
                         IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () {
-                              _showDeleteDialog(context, materialProvider, material.id!, index);
+                              materialProvider.deleteMaterial(context, material.id!, index);
                             }
                         ),
                       ],

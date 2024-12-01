@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:project/screens/student/open_class.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/ClassProvider.dart';
@@ -33,7 +32,7 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
               child: Text(
@@ -68,7 +67,6 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
                   ),
                   onPressed: () {
                     classProvider.getClassInfoStudent(context, searchController.text);
-                    FocusScope.of(context).unfocus();
                   },
                   child: Text('Thêm'),
                 ),
@@ -139,27 +137,7 @@ class _StudentClassRegisterState extends State<StudentClassRegister> {
                   },
                   child: Text('Xóa lớp'),
                 ),
-
               ],
-            ),
-            SizedBox(height: 5,),
-            GestureDetector(
-              onTap: () {
-                // Chuyển sang màn hình mới
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => OpenClass()
-                  ),
-                );
-              },
-              child: Text(
-                'Danh sách lớp mở kì này',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.red,
-                ),
-              ),
             ),
           ],
         ),
