@@ -10,18 +10,18 @@ import 'package:project/main.dart';
 
 import '../model/User.dart';
 
-class AuthProvider with ChangeNotifier {
+class AuthProvider with ChangeNotifier{
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   bool _isLoading = false;
-  bool _locked = false;
-  String? _haveCode;
+  bool _locked=false;
+  String? _haveCode ;
   bool _isLogin = false;
   String? _token;
   String? _fcm_token;
   String? _role;
   User _user = User();
-  String? _verify_code = "";
+  String? _verify_code="";
   String? fileId;
 
   User get user => _user;
@@ -29,7 +29,6 @@ class AuthProvider with ChangeNotifier {
     _user = newUser;
     notifyListeners();
   }
-
   bool get isLogin => _isLogin;
   bool get isLoading => _isLoading;
   bool get locked => _locked;
