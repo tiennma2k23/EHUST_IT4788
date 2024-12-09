@@ -210,6 +210,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     );
   }
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Đóng'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _showChangePasswordDialog(
       BuildContext context, AuthProvider authProvider) {
@@ -247,6 +265,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (newPassController.text == confirmPassController.text) {
                   authProvider.changePassword(
                       context, oldPassController.text, newPassController.text);
+                }
+                else {
+                  _showErrorDialog(context, 'Mật khẩu mới và xác nhận không khớp');
                 }
               },
               child: Text('Submit'),
@@ -302,9 +323,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   TextButton(
                     onPressed: () {
+                    if (_file != null && nameController.text != null){
                       print(nameController.text);
                       print(_file?.path);
-                      authProvider.changeInfo(context, _file!, nameController.text! );
+                      authProvider.changeInfo(context, _file!, nameController.text! );}
+                    else {
+                      _showErrorDialog(context, 'Vui lòng hoàn thiện đủ thông tin');
+                    }
                     },
                     child: Text('Submit'),
                   ),

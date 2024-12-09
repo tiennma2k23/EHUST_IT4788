@@ -46,6 +46,17 @@ class _EditMaterialState extends State<EditMaterial> {
     }
   }
 
+  void _showSuccessSnackbar(BuildContext context, String text, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(10), // Thêm khoảng cách
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +112,11 @@ class _EditMaterialState extends State<EditMaterial> {
               if (materialProvider.isLoading) const CircularProgressIndicator(),
               OutlinedButton(
                 onPressed: () {
+                  if (nameController.text.isEmpty ||
+                      descriptionController.text.isEmpty || _file == null) {
+                    _showSuccessSnackbar(context, 'Vui lòng điền đầy đủ thông tin', Colors.red);
+                    return;
+                  }
                   if(_file!= null) {
                     String extension = _file!
                         .path

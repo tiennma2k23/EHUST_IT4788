@@ -93,7 +93,7 @@ class ClassProvider with ChangeNotifier {
         _showSuccessSnackbar(context,jsonDecode(response.body)['data'] , Colors.red);
       }
     } catch (e) {
-      print(e.toString());
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
     }
     isLoading = false;
     notifyListeners();
@@ -123,7 +123,7 @@ class ClassProvider with ChangeNotifier {
         _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       }
     } catch (e) {
-      _showErrorDialog(context, e.toString());
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       print(e.toString());
     }
 
@@ -153,7 +153,7 @@ class ClassProvider with ChangeNotifier {
         Navigator.pop(context);
         notifyListeners();
       } else {
-        _showErrorDialog(context, response.body.toString());
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
@@ -209,7 +209,7 @@ class ClassProvider with ChangeNotifier {
       }else if(response.statusCode == 400){
         _showSuccessSnackbar(context, "Không tồn tại lớp có mã này", Colors.red);
       } else {
-        _showErrorDialog(context, response.body.toString());
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
@@ -244,7 +244,7 @@ class ClassProvider with ChangeNotifier {
         notifyListeners();
       }
       else {
-        _showErrorDialog(context, response.body.toString());
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");
@@ -270,7 +270,7 @@ class ClassProvider with ChangeNotifier {
         print(getClassLecturer);
         notifyListeners();
       } else {
-        _showErrorDialog(context, response.body.toString());
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");

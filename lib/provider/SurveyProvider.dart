@@ -54,8 +54,13 @@ class SurveyProvider with ChangeNotifier {
         notifyListeners();
         await getAllSurvey(context, classId);
         Navigator.pop(context);
-      }else {
+      }
+      else if( code == "1004"){
+        _showSuccessSnackbar(context, "Thời gian hết hạn không thể trước thời gian hiện tại",Colors.red);
+      }
+      else {
         print(responseBody.body);
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
       print(e.toString());
@@ -100,7 +105,7 @@ class SurveyProvider with ChangeNotifier {
         notifyListeners();
         getAllSurvey(context, classId);
       } else {
-        print(responseBody.body);
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
       print(e.toString());
@@ -196,7 +201,7 @@ class SurveyProvider with ChangeNotifier {
         notifyListeners();
         Navigator.pop(context);
       } else {
-        print(responseBody.body);
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
       print(e.toString());
@@ -260,7 +265,7 @@ class SurveyProvider with ChangeNotifier {
         _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       }
     } catch (e) {
-      _showErrorDialog(context, e.toString());
+      _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       print(e.toString());
     }
 
@@ -297,7 +302,7 @@ class SurveyProvider with ChangeNotifier {
         _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       }
     } catch (e) {
-      _showErrorDialog(context, e.toString());
+      _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       print(e.toString());
     }
 
@@ -326,7 +331,7 @@ class SurveyProvider with ChangeNotifier {
         _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       }
     } catch (e) {
-      _showErrorDialog(context, e.toString());
+      _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       print(e.toString());
     }
 

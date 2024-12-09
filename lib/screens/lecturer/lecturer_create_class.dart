@@ -68,12 +68,25 @@ class _LecturerCreateClassState extends State<LecturerCreateClass> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
+                    if (classCodeController.text.isEmpty ||
+                        classNameController.text.isEmpty ||
+                        selectedClassType.isEmpty ||
+                        startDate == null ||
+                        endDate == null ||
+                        maxStudentsController.text.isEmpty) {
+                      _showSuccessSnackbar(context, "Vui lòng nhập đầy đủ thông tin", Colors.red);
+                      return;
+                    }
                     final int num = int.parse(maxStudentsController.text);
                     if(num >50 || num< 0) {
                       _showSuccessSnackbar(context, "Giới hạn lớp là 50", Colors.red);
                     }else if(classCodeController.text.length !=6){
                       _showSuccessSnackbar(context, "Mã lớp phải có 6 số", Colors.red);
-                    }else{
+                    } else if (startDate!.isAfter(endDate!)) {
+                      _showSuccessSnackbar(
+                          context, "Ngày kết thúc phải sau ngày bắt đầu", Colors.red);
+                    }
+                    else{
                       classProvider.createClass(
                           context,
                           classCodeController.text,

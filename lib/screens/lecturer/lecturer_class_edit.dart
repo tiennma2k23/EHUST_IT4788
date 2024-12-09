@@ -48,6 +48,18 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
     );
   }
 
+  void _showSuccessSnackbar(BuildContext context, String text, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(10), // Thêm khoảng cách
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
      int? selectedClassId =
@@ -59,7 +71,7 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
     final TextEditingController classIdController =
         TextEditingController(text: classEdit.classId);
     final TextEditingController classNameController =
-        TextEditingController(text: classEdit.startDate);
+        TextEditingController(text: classEdit.className);
      startDateController =
      TextEditingController(text: classEdit.startDate);
       endDateController =
@@ -85,7 +97,7 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
                     ),
                   ),
                   SizedBox(height: 16),
-                  _buildTextField(classIdController, 'Mã lớp'),
+                  Text('Mã lớp: ${classEdit.classId}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   SizedBox(height: 8),
                   _buildTextField(classNameController, 'Tên lớp'),
                   SizedBox(height: 8),
@@ -109,19 +121,20 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
                         flex: 3,
                         child: ElevatedButton(
                           onPressed: () {
-                            print(selectedClassType);
+                            if (classNameController.text.isEmpty ||
+                                selectedClassType.isEmpty ) {
+                              _showSuccessSnackbar(context, "Vui lòng nhập đầy đủ thông tin", Colors.red);
+                              return;
+                            }
                             classProvider.updateClass(
                                 context,
                                 selectedClassId!,
                                 classIdController.text,
                                 classNameController.text,
                                 selectedClassType,
-                                startDate == null
-                                    ? classEdit.startDate!
-                                    : startDate.toString().substring(0, 10),
-                                endDate == null
-                                    ? classEdit.endDate!
-                                    : endDate.toString().substring(0, 10));
+                                startDate == null ? classEdit.startDate! : startDate.toString().substring(0, 10),
+                                endDate == null ? classEdit.endDate! : endDate.toString().substring(0, 10)
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             textStyle: TextStyle(fontSize: 15),
@@ -195,7 +208,6 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
   Widget _buildDatePicker(
       BuildContext context, String label, bool isStartDate, ) {
     return TextField(
-      readOnly: true,
       decoration: InputDecoration(
         labelText: label,
         focusedBorder: OutlineInputBorder(
@@ -227,5 +239,4 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
               ? startDateController.text
               : endDateController.text,
     ));
-
 }}

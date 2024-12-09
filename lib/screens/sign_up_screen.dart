@@ -150,6 +150,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         focusedBorder: whiteBorder,
         disabledBorder: whiteBorder,
         errorBorder: whiteBorder, // Viền màu đỏ khi có lỗi
+        errorStyle: TextStyle(color: Colors.white),
         focusedErrorBorder: whiteBorder,
       ),
     );
@@ -170,6 +171,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           focusedBorder: whiteBorder,
           disabledBorder: whiteBorder,
           errorBorder: whiteBorder, // Viền màu đỏ khi có lỗi
+          errorStyle: TextStyle(color: Colors.white),
           focusedErrorBorder: whiteBorder,
         suffixIcon: IconButton(
             onPressed: (){
@@ -196,6 +198,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         focusedBorder: whiteBorder,
         disabledBorder: whiteBorder,
         errorBorder: whiteBorder, // Viền màu đỏ khi có lỗi
+        errorStyle: TextStyle(color: Colors.white),
         focusedErrorBorder: whiteBorder,
       ),
       items: ['STUDENT', 'LECTURER'].map((String role) {

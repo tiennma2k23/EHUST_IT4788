@@ -102,12 +102,14 @@ class AuthProvider with ChangeNotifier{
         _showSuccessSnackbar(context, "Không tồn tại tài khoản này, vui lòng thử lại", Colors.red);
       }else if(code == "1017"){
         _showSuccessSnackbar(context, "Mật khẩu sai, vui lòng thử lại", Colors.red);
+      } else if (code == "1002"){
+        _showSuccessSnackbar(context, "Vui lòng nhập đầy đủ thông tin", Colors.red);
       }
       else {
-        _showErrorDialog(context, response.body.toString());
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
-      _showErrorDialog(context, e.toString());
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
     }
 
     _isLoading = false;
@@ -147,7 +149,10 @@ class AuthProvider with ChangeNotifier{
         _showSuccessSnackbar(context, "Tài khoản đã tồn tại với email này", Colors.red);
       } else if(code == "1015"){
         _showSuccessSnackbar(context, "Mật khẩu không nên chứa các kí tự đặc biệt", Colors.red);
-      }else {
+      } else if(code == "1012"){
+        _showSuccessSnackbar(context, "Mật khẩu phải có nhiều hơn 6 kí tự", Colors.red);
+      }
+      else {
         _showErrorDialog(context, response.body);
       }
     } catch (e) {
@@ -242,7 +247,12 @@ class AuthProvider with ChangeNotifier{
         _showSuccessSnackbar(context, "Thay đổi mật khẩu thanh công", Colors.green);
         notifyListeners();
       }else if(code == "1018"){
-        _showSuccessSnackbar(context, "Mật khẩu mới liên quan đến mật khẩu cũ, vui lòng đặt lại", Colors.red);
+        _showErrorDialog(context, "Mật khẩu mới liên quan đến mật khẩu cũ, vui lòng đặt lại");
+      } else if(code == "1017") {
+        _showErrorDialog(context, "Mật khẩu cũ không đúng");
+      }
+      else if(code =="1012"){
+        _showErrorDialog(context, "Mật khẩu phải có nhiều hơn 6 kí tự");
       }
       else {
         _showErrorDialog(context, response.body.toString());
@@ -291,11 +301,11 @@ class AuthProvider with ChangeNotifier{
       }else if(code == "1011"){
         _showSuccessSnackbar(context, "Email không đúng định dạng @hust.edu.vn", Colors.red);
       } else {
-        print(responseBody.body);
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
       print(e.toString());
-      _showErrorDialog(context, e.toString());
+      _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
     }
     _isLoading = false;
     notifyListeners();
@@ -320,7 +330,7 @@ class AuthProvider with ChangeNotifier{
         notifyListeners();
       }
       else {
-        _showErrorDialog(context, response.body.toString());
+        _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
     } catch (e) {
       _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại Exception");

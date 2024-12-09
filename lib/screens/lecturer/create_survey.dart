@@ -66,6 +66,18 @@ class _CreateSurveyState extends State<CreateSurvey> {
     }
   }
 
+  void _showSuccessSnackbar(BuildContext context, String text, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(10), // Thêm khoảng cách
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final surveyProvider = Provider.of<SurveyProvider>(context);
@@ -108,7 +120,7 @@ class _CreateSurveyState extends State<CreateSurvey> {
             TextField(
               controller: _dateController,
               decoration: InputDecoration(
-                labelText: 'Chọn ngày',
+                labelText: 'Chọn hạn nộp',
                 suffixIcon: Icon(Icons.calendar_today),
               ),
               readOnly: true, // Làm cho TextField không thể chỉnh sửa
@@ -131,6 +143,10 @@ class _CreateSurveyState extends State<CreateSurvey> {
             if (surveyProvider.isLoading) const CircularProgressIndicator(),
             OutlinedButton(
               onPressed: () {
+                if (_file == null || nameController.text.isEmpty || descriptionController.text.isEmpty || _dateController.text.isEmpty) {
+                  _showSuccessSnackbar(context, "Vui lòng nhập đầy đủ thông tin", Colors.red);
+                  return;
+                }
                 surveyProvider.create_survey(context, _file!, widget.classId!, nameController.text, _dateController.text, descriptionController.text);
               },
               child: Text('Tạo bài kiểm tra'),
