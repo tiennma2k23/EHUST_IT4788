@@ -1,24 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:project/Constant.dart';
+import 'package:project/main.dart';
 
 import '../model/User.dart';
 
-class AuthProvider with ChangeNotifier{
+class AuthProvider with ChangeNotifier {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   bool _isLoading = false;
-  bool _locked=false;
-  String? _haveCode ;
+  bool _locked = false;
+  String? _haveCode;
   bool _isLogin = false;
   String? _token;
+  String? _fcm_token;
   String? _role;
   User _user = User();
-  String? _verify_code="";
+  String? _verify_code = "";
   String? fileId;
 
   User get user => _user;
@@ -26,12 +29,14 @@ class AuthProvider with ChangeNotifier{
     _user = newUser;
     notifyListeners();
   }
+
   bool get isLogin => _isLogin;
   bool get isLoading => _isLoading;
   bool get locked => _locked;
   String? get haveCode => _haveCode;
   String? get token => _token;
   String? get role => _role;
+  String? get fcm_token => _fcm_token;
 
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(
@@ -52,15 +57,17 @@ class AuthProvider with ChangeNotifier{
     );
   }
 
-  Future<void> login(BuildContext context,String email, String password) async {
+  Future<void> login(
+      BuildContext context, String email, String password) async {
     int deviceId = 1;
+    _fcm_token = await _secureStorage.read(key: 'fcm_token');
     final Map<String, dynamic> requestBody = {
       "email": email,
       "password": password,
       "device_id": deviceId,
-      "fcm_token": ""
+      "fcm_token": _fcm_token
     };
-    print(requestBody);
+    print("BODY LOGIN: " + requestBody.toString());
     _isLoading = true;
     notifyListeners();
 
@@ -78,20 +85,19 @@ class AuthProvider with ChangeNotifier{
         _user = User.fromJson(jsonDecode(responseBody)['data']);
         _secureStorage.write(key: 'token', value: _user.token);
         String url = _user.avatar!;
-        if(url != "") fileId = url.substring(url.indexOf('d/') + 2, url.indexOf('/view'));
+        if (url != "")
+          fileId = url.substring(url.indexOf('d/') + 2, url.indexOf('/view'));
         print(_user);
-        if(_user.role == "STUDENT"){
+        if (_user.role == "STUDENT") {
           Navigator.pushNamed(context, '/student');
         }
-        if(_user.role == "LECTURER"){
+        if (_user.role == "LECTURER") {
           Navigator.pushNamed(context, '/lecturer');
         }
         _showSuccessSnackbar(context, "Đăng nhâp thành công", Colors.green);
-
-      }
-      else if(response.statusCode == 403){
+      } else if (response.statusCode == 403) {
         _locked = true;
-        if(_verify_code == "") await getVerifyCode(context, email, password);
+        if (_verify_code == "") await getVerifyCode(context, email, password);
 
         verifyCode(context, email, password, _verify_code!);
         notifyListeners();
@@ -116,8 +122,8 @@ class AuthProvider with ChangeNotifier{
     notifyListeners();
   }
 
-
-  Future<void> signUp(BuildContext context,String surname, String name, String email, String password, String role) async {
+  Future<void> signUp(BuildContext context, String surname, String name,
+      String email, String password, String role) async {
     final Map<String, dynamic> requestBody = {
       "email": email,
       "password": password,
@@ -131,7 +137,8 @@ class AuthProvider with ChangeNotifier{
     notifyListeners();
     try {
       final response = await http.post(
-        Uri.parse('${Constant.baseUrl}/it4788/signup'), // Thay đổi URL cho API thực tế
+        Uri.parse(
+            '${Constant.baseUrl}/it4788/signup'), // Thay đổi URL cho API thực tế
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
@@ -163,7 +170,8 @@ class AuthProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> verifyCode(BuildContext context,String email,String password, String code) async {
+  Future<void> verifyCode(
+      BuildContext context, String email, String password, String code) async {
     final Map<String, dynamic> requestBody = {
       "email": email,
       "verify_code": code,
@@ -172,14 +180,16 @@ class AuthProvider with ChangeNotifier{
     notifyListeners();
     try {
       final response = await http.post(
-        Uri.parse('${Constant.baseUrl}/it4788/check_verify_code'), // Thay đổi URL cho API thực tế
+        Uri.parse(
+            '${Constant.baseUrl}/it4788/check_verify_code'), // Thay đổi URL cho API thực tế
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
 
       if (response.statusCode == 200) {
         print(response.body);
-        _showSuccessSnackbar(context, "Kích hoạt tài khoản thành công", Colors.green);
+        _showSuccessSnackbar(
+            context, "Kích hoạt tài khoản thành công", Colors.green);
         _locked = false;
         notifyListeners();
         login(context, email, password);
@@ -196,7 +206,8 @@ class AuthProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> getVerifyCode(BuildContext context,String email,String password) async {
+  Future<void> getVerifyCode(
+      BuildContext context, String email, String password) async {
     final Map<String, dynamic> requestBody = {
       "email": email,
       "password": password,
@@ -205,7 +216,8 @@ class AuthProvider with ChangeNotifier{
     notifyListeners();
     try {
       final response = await http.post(
-        Uri.parse('${Constant.baseUrl}/it4788/get_verify_code'), // Thay đổi URL cho API thực tế
+        Uri.parse(
+            '${Constant.baseUrl}/it4788/get_verify_code'), // Thay đổi URL cho API thực tế
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
@@ -226,7 +238,8 @@ class AuthProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> changePassword(BuildContext context, String oldPass, String newPass)async{
+  Future<void> changePassword(
+      BuildContext context, String oldPass, String newPass) async {
     String? token = await _secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -244,7 +257,8 @@ class AuthProvider with ChangeNotifier{
       String code = jsonDecode(response.body)['code'].toString();
       if (response.statusCode == 200) {
         Navigator.pop(context);
-        _showSuccessSnackbar(context, "Thay đổi mật khẩu thanh công", Colors.green);
+        _showSuccessSnackbar(
+            context, "Thay đổi mật khẩu thanh công", Colors.green);
         notifyListeners();
       }else if(code == "1018"){
         _showErrorDialog(context, "Mật khẩu mới liên quan đến mật khẩu cũ, vui lòng đặt lại");
@@ -262,11 +276,12 @@ class AuthProvider with ChangeNotifier{
     }
   }
 
-  Future<void> changeInfo(BuildContext context, File uploadFile,
-      String name) async {
-    String? token= await _secureStorage.read(key: 'token');
-    try{
-      var request = http.MultipartRequest('POST', Uri.parse("${Constant.baseUrl}/it4788/change_info_after_signup"));
+  Future<void> changeInfo(
+      BuildContext context, File uploadFile, String name) async {
+    String? token = await _secureStorage.read(key: 'token');
+    try {
+      var request = http.MultipartRequest('POST',
+          Uri.parse("${Constant.baseUrl}/it4788/change_info_after_signup"));
 
       // Thêm các trường văn bản (text)
       request.fields['token'] = token!;
@@ -292,14 +307,18 @@ class AuthProvider with ChangeNotifier{
       String code = jsonDecode(responseBody.body)['code'].toString();
       print(responseBody.body);
       if (response.statusCode == 200) {
-        _user.avatar = User.fromJson(jsonDecode(responseBody.body)['data']).avatar;
+        _user.avatar =
+            User.fromJson(jsonDecode(responseBody.body)['data']).avatar;
         String url = _user.avatar!;
-        if(url != "") fileId = url.substring(url.indexOf('d/') + 2, url.indexOf('/view'));
-        _showSuccessSnackbar(context, "Cập nhật thông tin thành công", Colors.green);
+        if (url != "")
+          fileId = url.substring(url.indexOf('d/') + 2, url.indexOf('/view'));
+        _showSuccessSnackbar(
+            context, "Cập nhật thông tin thành công", Colors.green);
         Navigator.pop(context);
         notifyListeners();
-      }else if(code == "1011"){
-        _showSuccessSnackbar(context, "Email không đúng định dạng @hust.edu.vn", Colors.red);
+      } else if (code == "1011") {
+        _showSuccessSnackbar(
+            context, "Email không đúng định dạng @hust.edu.vn", Colors.red);
       } else {
         _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
@@ -311,7 +330,7 @@ class AuthProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> logout(BuildContext context)async{
+  Future<void> logout(BuildContext context) async {
     String? token = await _secureStorage.read(key: 'token');
     final Map<String, dynamic> requestBody = {
       "token": token,
@@ -349,6 +368,36 @@ class AuthProvider with ChangeNotifier{
     );
   }
 
+  Future<List<Map<String, dynamic>>> searchAccount(String searchQuery) async {
+    final String url = 'http://160.30.168.228:8080/it5023e/search_account';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'search': searchQuery,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        // Ensure response has 'data' and 'meta'
+        if (responseData['meta']['code'] == 1000 &&
+            responseData['data'] is List) {
+          return List<Map<String, dynamic>>.from(responseData['data']);
+        } else {
+          throw Exception(
+              'Invalid response structure: ${responseData['meta']['message']}');
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch accounts. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Error fetching accounts: $error');
+    }
+  }
 }
-
-

@@ -71,14 +71,14 @@ class SurveyProvider with ChangeNotifier {
   }
 
   Future<void> edit_survey(BuildContext context, File uploadFile,
-      String classId, String surveyId, String date, String des) async {
+      String surveyId, String date, String des, String classId) async {
     token = await secureStorage.read(key: 'token');
     try{
-      var request = http.MultipartRequest('POST', Uri.parse("${Constant.baseUrl}/it5023e/create_survey"));
+      var request = http.MultipartRequest('POST', Uri.parse("${Constant.baseUrl}/it5023e/edit_survey"));
 
       // Thêm các trường văn bản (text)
       request.fields['token'] = token!;
-      request.fields['assignmentId'] = classId;
+      request.fields['assignmentId'] = surveyId;
       request.fields['deadline'] = DateTime.parse(date).toIso8601String();
       request.fields['description'] = des;
 
@@ -100,10 +100,10 @@ class SurveyProvider with ChangeNotifier {
       var responseBody = await http.Response.fromStream(response);
 
       if (response.statusCode == 200) {
-        _showErrorDialog(context, "Dang ki lop thanh cong");
-        //surveys.add(Survey.fromJson(responseBody.body));
+        _showSuccessSnackbar(context, "Chỉnh sửa thành công", Colors.green);
         notifyListeners();
-        getAllSurvey(context, classId);
+        await getAllSurvey(context, classId);
+        Navigator.pop(context);
       } else {
         _showErrorDialog(context, "Có lỗi xảy ra, vui lòng thử lại");
       }
@@ -246,6 +246,8 @@ class SurveyProvider with ChangeNotifier {
       "token": token,
     "survey_id": surveyId
     };
+    isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_survey_response'),
@@ -268,7 +270,8 @@ class SurveyProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       print(e.toString());
     }
-
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> grade_survey(BuildContext context, String surveyId, String score, String subId)async{
@@ -282,6 +285,8 @@ class SurveyProvider with ChangeNotifier {
       "survey_id": surveyId,
       "grade": grade
     };
+    isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_survey_response'),
@@ -305,7 +310,8 @@ class SurveyProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       print(e.toString());
     }
-
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> get_submission(BuildContext context, String assignment_id)async{
@@ -314,6 +320,8 @@ class SurveyProvider with ChangeNotifier {
       "token": token,
       "assignment_id": assignment_id
     };
+    isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_submission'),
@@ -334,6 +342,8 @@ class SurveyProvider with ChangeNotifier {
       _showErrorDialog(context, "Có lôĩ xảy ra, vui lòng thử lại");
       print(e.toString());
     }
+    isLoading = false;
+    notifyListeners();
 
   }
 

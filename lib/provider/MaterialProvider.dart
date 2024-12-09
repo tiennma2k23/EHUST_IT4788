@@ -65,7 +65,7 @@ class MaterialProvider with ChangeNotifier {
         notifyListeners();
         Navigator.pop(context);
       } else {
-        print(responseBody.body);
+        _showSuccessSnackbar(context, "Có lỗi xảy ra khi tải tài liệu lên, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       print(e.toString());
@@ -82,6 +82,8 @@ class MaterialProvider with ChangeNotifier {
       "class_id": classId
     };
     print(requestBody);
+    isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('${Constant.baseUrl}/it5023e/get_material_list'),
@@ -169,7 +171,7 @@ class MaterialProvider with ChangeNotifier {
         notifyListeners();
         Navigator.pop(context);
       } else {
-        print(responseBody.body);
+        _showSuccessSnackbar(context, "Có lỗi xảy ra khi tải tài liệu lên, vui lòng thử lại", Colors.red);
       }
     } catch (e) {
       print(e.toString());
