@@ -87,8 +87,9 @@ class ClassProvider with ChangeNotifier {
         headers: {"Content-Type": "application/json"},
         body: json.encode(requestBody),
       );
+      print("hatest"+ response.body);
       String code = jsonDecode(response.body)['data'];
-      print(response.body);
+      print("test" + response.body);
       if (response.statusCode == 200) {
         Class newClass = Class.fromJson(json.decode(response.body)['data']);
         print(newClass);
