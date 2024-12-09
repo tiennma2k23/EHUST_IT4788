@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project/model/Class.dart';
 import 'package:project/screens/myAppBar.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';  // Add this import to format DateTime
 
 import '../../provider/ClassProvider.dart';
 
@@ -13,12 +14,12 @@ class LecturerEditClass extends StatefulWidget {
 class _LecturerCreateClassState extends State<LecturerEditClass> {
   DateTime? startDate;
   DateTime? endDate;
-  String selectedClassType = 'ACTIVE'; // Giá trị mặc định
+  String selectedClassType = 'ACTIVE'; // Default value
   List<String> items = ['ACTIVE', 'COMPLETED', 'UPCOMING'];
   TextEditingController startDateController = TextEditingController();
- TextEditingController endDateController =TextEditingController();
+  TextEditingController endDateController = TextEditingController();
 
-  void _showDeleteDialog(BuildContext context,ClassProvider classProvider, String classId, int index) {
+  void _showDeleteDialog(BuildContext context, ClassProvider classProvider, String classId, int index) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -26,17 +27,17 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
           title: Text('Xác Nhận Xóa'),
           content: Text('Bạn có chắc chắn muốn xóa mục này không?'),
           actions: [
-            // Nút "Không"
+            // No button
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Đóng dialog
+                Navigator.of(context).pop();
               },
               child: Text('Không'),
             ),
-            // Nút "Có"
+            // Yes button
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Đóng dialog
+                Navigator.of(context).pop();
                 classProvider.deleteClass(context, classId, index);
                 print('Mục đã bị xóa');
               },
@@ -54,7 +55,7 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
         content: Text(text),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(10), // Thêm khoảng cách
+        margin: const EdgeInsets.all(10),
         duration: const Duration(seconds: 3),
       ),
     );
@@ -62,114 +63,127 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
 
   @override
   Widget build(BuildContext context) {
-     int? selectedClassId =
-        ModalRoute.of(context)!.settings.arguments as int?;
+    int? selectedClassId = ModalRoute.of(context)!.settings.arguments as int?;
     final classProvider = Provider.of<ClassProvider>(context);
-    selectedClassId = selectedClassId! > classProvider.classes.length-1?classProvider.classes.length-1:selectedClassId;
+    selectedClassId = selectedClassId! > classProvider.classes.length - 1
+        ? classProvider.classes.length - 1
+        : selectedClassId;
     Class classEdit = classProvider.classes[selectedClassId!];
 
-    final TextEditingController classIdController =
-        TextEditingController(text: classEdit.classId);
-    final TextEditingController classNameController =
-        TextEditingController(text: classEdit.className);
-     startDateController =
-     TextEditingController(text: classEdit.startDate);
-      endDateController =
-     TextEditingController(text: classEdit.endDate);
+    final TextEditingController classIdController = TextEditingController(text: classEdit.classId);
+    final TextEditingController classNameController = TextEditingController(text: classEdit.className);
+    print(classEdit.startDate);
+
+    if (startDate == null && classEdit.startDate != null) {
+      try {
+        startDate = DateFormat('dd/MM/yyyy').parse(classEdit.startDate!);
+        startDateController.text = DateFormat('yyyy-MM-dd').format(startDate!);
+      } catch (e) {
+        print('Error parsing start date: $e');
+        startDateController.text = '';
+      }
+    }
+    print(classEdit.endDate);
+    if (endDate == null && classEdit.endDate != null) {
+      try {
+        endDate = DateFormat('dd/MM/yyyy').parse(classEdit.endDate!);
+        endDateController.text = DateFormat('yyyy-MM-dd').format(endDate!);
+      } catch (e) {
+        print('Error parsing end date: $e');
+        endDateController.text = '';
+      }
+    }
+
+
 
     return Scaffold(
-        appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Text(
-                      'Chỉnh sửa lớp học',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
+      appBar: MyAppBar(check: true, title: "EHUST-LECTURER"),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    'Chỉnh sửa lớp học',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 16),
-                  Text('Mã lớp: ${classEdit.classId}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 8),
-                  _buildTextField(classNameController, 'Tên lớp'),
-                  SizedBox(height: 8),
-                  _buildDropdown(selectedClassType, items, (newValue) {
-                    setState(() {
-                      selectedClassType = newValue!;
-                      print(selectedClassType);
-                    });
-                  }, 'Trạng thái lớp'),
-                  SizedBox(height: 8),
-                  _buildDatePicker(context, 'Ngày bắt đầu', true),
-                  SizedBox(height: 8),
-                  _buildDatePicker(context, 'Ngày kết thúc', false),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween, // Phân tán đều
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        flex: 3,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (classNameController.text.isEmpty ||
-                                selectedClassType.isEmpty ) {
-                              _showSuccessSnackbar(context, "Vui lòng nhập đầy đủ thông tin", Colors.red);
-                              return;
-                            }
-                            classProvider.updateClass(
-                                context,
-                                selectedClassId!,
-                                classIdController.text,
-                                classNameController.text,
-                                selectedClassType,
-                                startDate == null ? classEdit.startDate! : startDate.toString().substring(0, 10),
-                                endDate == null ? classEdit.endDate! : endDate.toString().substring(0, 10)
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            textStyle: TextStyle(fontSize: 15),
-
-                          ),
-                          child: Text('Chỉnh sửa lớp học'),
+                ),
+                SizedBox(height: 16),
+                Text('Mã lớp: ${classEdit.classId}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                SizedBox(height: 8),
+                _buildTextField(classNameController, 'Tên lớp'),
+                SizedBox(height: 8),
+                _buildDropdown(selectedClassType, items, (newValue) {
+                  setState(() {
+                    selectedClassType = newValue!;
+                    print(selectedClassType);
+                  });
+                }, 'Trạng thái lớp'),
+                SizedBox(height: 8),
+                _buildDatePicker(context, 'Ngày bắt đầu', true),
+                SizedBox(height: 8),
+                _buildDatePicker(context, 'Ngày kết thúc', false),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      flex: 3,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (classNameController.text.isEmpty || selectedClassType.isEmpty) {
+                            _showSuccessSnackbar(context, "Vui lòng nhập đầy đủ thông tin", Colors.red);
+                            return;
+                          }
+                          classProvider.updateClass(
+                            context,
+                            selectedClassId!,
+                            classIdController.text,
+                            classNameController.text,
+                            selectedClassType,
+                              startDate == null ? classEdit.startDate! : startDate.toString().substring(0, 10),  // This line
+                              endDate == null ? classEdit.endDate! : endDate.toString().substring(0, 10)  // This line
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          textStyle: TextStyle(fontSize: 15),
                         ),
+                        child: Text('Chỉnh sửa lớp học'),
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Flexible(
-                        flex: 2,
-                        child: ElevatedButton(
-                          onPressed: () {
-                              _showDeleteDialog(context,classProvider, classIdController.text, selectedClassId!);
-                              setState(() {
-                                selectedClassId = 0;
-                              });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            textStyle: TextStyle(fontSize: 15),
-                            backgroundColor: Colors.red
-                          ),
-                          child: Text('Xoa lớp học'),
+                    ),
+                    SizedBox(width: 10),
+                    Flexible(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _showDeleteDialog(context, classProvider, classIdController.text, selectedClassId!);
+                          setState(() {
+                            selectedClassId = 0;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          textStyle: TextStyle(fontSize: 15),
+                          backgroundColor: Colors.red,
                         ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                ],
-              ),
+                        child: Text('Xoa lớp học'),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _buildTextField(TextEditingController controller, String label) {
@@ -205,8 +219,7 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
     );
   }
 
-  Widget _buildDatePicker(
-      BuildContext context, String label, bool isStartDate, ) {
+  Widget _buildDatePicker(BuildContext context, String label, bool isStartDate) {
     return TextField(
       decoration: InputDecoration(
         labelText: label,
@@ -219,24 +232,23 @@ class _LecturerCreateClassState extends State<LecturerEditClass> {
       onTap: () async {
         DateTime? selectedDate = await showDatePicker(
           context: context,
-          initialDate:
-              isStartDate ? DateTime.now() : (endDate ?? DateTime.now()),
+          initialDate: isStartDate ? DateTime.now() : (endDate ?? DateTime.now()),
           firstDate: DateTime(2000),
           lastDate: DateTime(2101),
         );
         if (selectedDate != null) {
           setState(() {
             if (isStartDate) {
-              startDateController.text = selectedDate.toLocal().toString().split(' ')[0];
+              startDate = selectedDate;
+              startDateController.text = DateFormat('yyyy-MM-dd').format(selectedDate);
             } else {
-              endDateController.text = selectedDate.toLocal().toString().split(' ')[0];
+              endDate = selectedDate;
+              endDateController.text = DateFormat('yyyy-MM-dd').format(selectedDate);
             }
           });
         }
       },
-      controller: TextEditingController(
-          text: isStartDate
-              ? startDateController.text
-              : endDateController.text,
-    ));
-}}
+      controller: isStartDate ? startDateController : endDateController,
+    );
+  }
+}

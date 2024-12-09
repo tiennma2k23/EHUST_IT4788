@@ -39,7 +39,7 @@ class Class {
     DateTime parsedDate = DateTime.parse(json['start_date']);
     startDate = DateFormat('dd/MM/yyyy').format(parsedDate);
     DateTime parsedDate1 = DateTime.parse(json['end_date']);
-    endDate = DateFormat('dd/MM/yyyy').format(parsedDate);
+    endDate = DateFormat('dd/MM/yyyy').format(parsedDate1);
     status = json['status'];
     if (json['student_accounts'] != null) {
       studentAccounts = <StudentAccount>[];
